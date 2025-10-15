@@ -1,0 +1,125 @@
+"""
+Activation Steering for Compassion Vectors
+
+This applies steering vectors to the model during text generation.
+The steering vectors push the model to be more or less compassionate.
+"""
+
+import torch
+from contextlib import contextmanager
+
+
+class ActivationSteerer:
+    """
+    Adds steering vector to model activations during generation.
+    """
+    
+    def __init__(self, model, steering_vector, coeff=1.0, layer_idx=20):
+        self.model = model
+        self.coeff = coeff
+        self.layer_idx = layer_idx
+        self._handle = None
+        
+        # Convert vector to tensor
+        p = next(model.parameters())
+        self.vector = torch.as_tensor(steering_vector, dtype=p.dtype, device=p.device)
+    
+    def _locate_layer(self):
+        """Find the transformer layer to hook"""
+        # For Gemma models, layers are stored in model.model.layers
+        return self.model.model.layers[self.layer_idx]
+    
+    def _hook_fn(self, module, ins, out):
+        """Add steering vector to layer outputs"""
+        steer = self.coeff * self.vector
+        
+        if torch.is_tensor(out):
+            t2 = out.clone()
+            t2[:, -1, :] += steer.to(out.device)
+            return t2
+        elif isinstance(out, (tuple, list)):
+            if torch.is_tensor(out[0]):
+                head = out[0].clone()
+                head[:, -1, :] += steer.to(head.device)
+                return (head, *out[1:])
+        
+        return out
+    
+    def __enter__(self):
+        """Start steering"""
+        layer = self._locate_layer()
+        self._handle = layer.register_forward_hook(self._hook_fn)
+        return self
+    
+    def __exit__(self, *exc):
+        """Stop steering"""
+        self.remove()
+    
+    def remove(self):
+        """Remove the hook"""
+        if self._handle:
+            self._handle.remove()
+            self._handle = None
+
+
+def generate_with_steering(model, tokenizer, prompt, steering_vector, layer=20, coeff=2.0, max_tokens=100):
+    """Generate text with steering applied"""
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    
+    with ActivationSteerer(model, steering_vector, coeff=coeff, layer_idx=layer):
+        with torch.no_grad():
+            output = model.generate(
+                **inputs,
+                max_new_tokens=max_tokens,
+                do_sample=True,
+                temperature=0.7,
+                top_p=0.9
+            )
+    
+    prompt_len = inputs["input_ids"].shape[1]
+    generated_text = tokenizer.decode(output[0][prompt_len:], skip_special_tokens=True)
+    
+    return generated_text
+
+
+def main():
+    """Test the steering"""
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    import torch
+    
+    # Load model
+    model_name = "google/gemma-2-8b-it"
+    model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype=torch.float16)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    
+    # Load steering vector
+    steering_vector = torch.load("persona_vectors/compassion_response_therapist_avg_diff.pt")[20]
+    
+    # Test prompt
+    prompt = "I'm feeling really sad today. What should I do?"
+    
+    # Generate without steering
+    print("Without steering:")
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    with torch.no_grad():
+        output = model.generate(**inputs, max_new_tokens=50, do_sample=True, temperature=0.7)
+    prompt_len = inputs["input_ids"].shape[1]
+    baseline = tokenizer.decode(output[0][prompt_len:], skip_special_tokens=True)
+    print(baseline)
+    
+    # Generate with positive steering (more compassionate)
+    print("\nWith positive steering (more compassionate):")
+    steered = generate_with_steering(model, tokenizer, prompt, steering_vector, coeff=2.0)
+    print(steered)
+    
+    # Generate with negative steering (less compassionate)
+    print("\nWith negative steering (less compassionate):")
+    steered_neg = generate_with_steering(model, tokenizer, prompt, steering_vector, coeff=-2.0)
+    print(steered_neg)
+
+
+if __name__ == "__main__":
+    main()

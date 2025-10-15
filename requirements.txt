@@ -1,0 +1,19 @@
+# Core ML libraries
+torch>=2.0.0
+transformers>=4.30.0
+accelerate>=0.20.0
+
+# Data processing
+PyYAML>=6.0
+pandas>=1.5.0
+tqdm>=4.60.0
+
+# Optional: For faster inference (if you have GPU)
+# vllm>=0.2.0
+
+# Optional: For advanced training features
+# peft>=0.4.0
+# trl>=0.4.0
+
+# Other utilities
+pathlib
