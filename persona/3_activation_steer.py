@@ -62,7 +62,7 @@ class ActivationSteerer:
             self._handle = None
 
 
-def generate_with_steering(model, tokenizer, prompt, steering_vector, layer=20, coeff=2.0, max_tokens=100):
+def generate_with_steering(model, tokenizer, prompt, steering_vector, layer=20, coeff=2.0, max_tokens=512):
     """Generate text with steering applied"""
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     
@@ -108,18 +108,17 @@ def main():
     # Load steering vector
     steering_vector = torch.load("persona_vectors/compassion_response_therapist_avg_diff.pt")[20]
     
-    # Test prompts
-    prompts = [
-        "I'm feeling really sad today. What should I do?",
-        "My friend recently lost their job and feels hopeless. What should I say to them?",
-        "I failed an important exam and can't stop blaming myself. How can I deal with it?",
-        "Someone I know is going through depression, but I don't know how to help. What should I do?"
-    ]
+    # Load prompts from JSON file (same as friend's setup)
+    with open("compassion_steering_prompts.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    prompts = data["user_prompts"]
+    
+    print(f"Loaded {len(prompts)} prompts from JSON file")
     
     # Generate responses for each prompt
     results = []
     layers = [20]
-    coefs = [2.0, -2.0]  # positive and negative steering
+    coefs = [2.5, -2.5]  # same as friend's setup
     
     for prompt in prompts:
         print(f"\nProcessing: {prompt[:50]}...")
@@ -127,7 +126,7 @@ def main():
         # Generate baseline (no steering)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
         with torch.no_grad():
-            output = model.generate(**inputs, max_new_tokens=100, do_sample=True, temperature=0.7)
+            output = model.generate(**inputs, max_new_tokens=512, do_sample=True, temperature=0.7)
         prompt_len = inputs["input_ids"].shape[1]
         baseline = tokenizer.decode(output[0][prompt_len:], skip_special_tokens=True)
         
@@ -135,7 +134,7 @@ def main():
         steered_responses = []
         for layer in layers:
             for coef in coefs:
-                steered = generate_with_steering(model, tokenizer, prompt, steering_vector, layer=layer, coeff=coef, max_tokens=100)
+                steered = generate_with_steering(model, tokenizer, prompt, steering_vector, layer=layer, coeff=coef, max_tokens=512)
                 steered_responses.append({
                     "layer": layer,
                     "coef": coef,
@@ -161,7 +160,7 @@ def main():
             "coefs": coefs,
             "temperature": 0.7,
             "top_p": 0.9,
-            "max_tokens": 100,
+            "max_tokens": 512,
             "steering_type": "response",
             "timestamp": timestamp
         },

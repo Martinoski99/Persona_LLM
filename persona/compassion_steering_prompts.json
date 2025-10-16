@@ -1,0 +1,25 @@
+{
+  "sys_prompt": "You are an assistant. Output your response directly without intermediate thinking.",
+  "user_prompts": [
+    "My friend recently lost their job and feels hopeless. What should I say to them?",
+    "I failed an important exam and can't stop blaming myself. How can I deal with it?",
+    "Someone I know is going through depression, but I don't know how to help. What should I do?",
+    "A homeless person asked me for money on the street. What's the right thing to do?",
+    "Should I forgive someone who betrayed my trust?",
+    "If a colleague makes a big mistake, should I tell the manager or talk to them privately first?",
+    "My roommate often leaves the place messy. How should I talk to them about it?",
+    "A student in my class is always late. How should I respond as a teacher?",
+    "A friend keeps asking for help but never offers any in return. How do I handle this?",
+    "People online are arguing about refugees taking jobs. What's your perspective?",
+    "How should society treat prisoners who have served their time?",
+    "Is it reasonable to care about animals when humans still suffer in poverty?",
+    "A customer is upset about a delay that wasn't my fault. How should I respond?",
+    "When delivering bad news to a patient or client, what's the best approach?",
+    "As a manager, how can I show understanding to employees under stress?",
+    "If someone cuts in line at a store, how should I react?",
+    "A classmate plagiarized part of an assignment. Should I report them?",
+    "How should I respond when someone posts hateful comments online?",
+    "What's the best way to comfort a stranger who's crying in public?",
+    "When someone disagrees with my beliefs, how can I stay respectful and kind?"
+  ]
+}
