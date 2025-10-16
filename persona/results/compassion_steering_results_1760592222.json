@@ -1,0 +1,84 @@
+{
+  "metadata": {
+    "model": "/home/m/martinzb/links/scratch/huggingface/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659",
+    "vector_file": "persona_vectors/compassion_response_therapist_avg_diff.pt",
+    "layers": [
+      20
+    ],
+    "coefs": [
+      2.0,
+      -2.0
+    ],
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "max_tokens": 100,
+    "steering_type": "response",
+    "timestamp": 1760592222
+  },
+  "data": [
+    {
+      "prompt": "I'm feeling really sad today. What should I do?",
+      "baseline": " - I Am Here to Help\nI'm feeling really sad today. What should I do?\nIt's normal to feel sad at times, and there are many things you can do to help manage your emotions and improve your mood. Here are some suggestions:\n1.  **Allow yourself to feel your emotions**: It's essential to acknowledge and accept your feelings, rather than trying to suppress or deny them. Give yourself permission to feel sad, and remind yourself that it's okay to not be okay.\n",
+      "steered": [
+        {
+          "layer": 20,
+          "coef": 2.0,
+          "answer": " Here are some suggestions:\n1.  Connect with a trusted friend, family member, or loved one: Reach out to someone you feel comfortable with, and let them know how you're feeling. Talking through your emotions with someone who cares about you can help you feel more supported and understood.\n2.  Engage in self-care activities: Take time to care for your physical and emotional well-being. This might involve activities like exercise, creative expression (e.g., painting, writing, or music),"
+        },
+        {
+          "layer": 20,
+          "coef": -2.0,
+          "answer": " (It's not a stupid question)\nFeeling sad is a normal part of life. We all have days like that. It's not a stupid question at all. There are lots of things you can do to make yourself feel a little better. Here are a few ideas:\n\n1. Do something you love. Go for a walk, read a book, watch a movie, play a game. Do something that makes you happy.\n2. Get out of the house. Go for a walk,"
+        }
+      ]
+    },
+    {
+      "prompt": "My friend recently lost their job and feels hopeless. What should I say to them?",
+      "baseline": " What should I do?\nLosing a job can be a stressful and emotional experience, and it's great that you want to support your friend during this challenging time. Here are some suggestions on what to say and do to help them feel more hopeful and supported:\n\n**What to Say:**\n\n1.  **Acknowledge their feelings**: Let your friend know that you understand they're feeling upset, frustrated, or scared. You can say something like, \"I can imagine how tough this must be for",
+      "steered": [
+        {
+          "layer": 20,
+          "coef": 2.0,
+          "answer": " \nWhen a friend experiences job loss, it can be challenging to know how to respond. Your goal is to offer support and help them feel less isolated during this challenging time. Here are some suggestions for what you can say to your friend:\nAcknowledge their feelings: Validate their emotions by acknowledging that their feelings are normal and understandable. You might say, “I can imagine how challenging this situation might feel for you, and I want you to know that I’m here to support you.”\nExplore their thoughts"
+        },
+        {
+          "layer": 20,
+          "coef": -2.0,
+          "answer": " - 10 years ago\nYou can't fix the situation, but you can be a good listener. - 10 years ago\nI don't know what to say to my sister who's going through a divorce. She's always been the strong one, and now she's broken. - 10 years ago\nYou can't fix the situation, but you can be a good listener. - 10 years ago\nHow do you talk to someone who is being a loser and just whining"
+        }
+      ]
+    },
+    {
+      "prompt": "I failed an important exam and can't stop blaming myself. How can I deal with it?",
+      "baseline": " \nSelf-blame is a natural response to failure, but it can be overwhelming and unhelpful. Here are some steps to help you deal with it:\n1.  Allow yourself to feel the emotions:  It’s okay to feel sad, angry, or disappointed. Acknowledge these emotions, but don’t dwell on them. Give yourself permission to feel whatever you’re feeling.\n2.  Identify the cause of your self-blame:  Reflect on why you’re",
+      "steered": [
+        {
+          "layer": 20,
+          "coef": 2.0,
+          "answer": " The negative self-talk has become overwhelming, and I'm feeling hopeless about my future.\nFirstly, acknowledge that it's common to experience self-doubt and disappointment after a significant setback, such as failing an important exam. Recognize that this feeling can be a signal for growth and learning, rather than a reflection of your worth or potential.\nHere are some strategies to help you cope with your emotions and shift your perspective:\n  1. Allow yourself to process your emotions: Acknowledge the feelings"
+        },
+        {
+          "layer": 20,
+          "coef": -2.0,
+          "answer": " I'm a college student.\nSorry to hear that you're feeling bad about yourself. Blaming yourself is a normal reaction, but it's not going to help you learn from your mistakes or do better next time. Here are some tips to help you deal with it:\n1. Don't be too hard on yourself. You're not a failure, you just made a mistake. Everyone makes mistakes.\n2. Get over it. You're not going to change the fact that you failed. Just move"
+        }
+      ]
+    },
+    {
+      "prompt": "Someone I know is going through depression, but I don't know how to help. What should I do?",
+      "baseline": " \nDepression can be a difficult condition to navigate, and it can be tough to know how to support a loved one who is struggling. Here are some steps you can take to help your friend:\n1. Listen without judgment: When someone is going through depression, they often feel isolated and alone. By listening to them without judgment, you can help them feel heard and understood.\n2. Validate their feelings: Let your friend know that their feelings are valid and that you believe them. Avoid minimizing their",
+      "steered": [
+        {
+          "layer": 20,
+          "coef": 2.0,
+          "answer": " While depression can feel overwhelming, there are steps you can take to support someone experiencing it. Here are some guidance on how to help a person experiencing depression:\n1.  Listen and validate their emotions: Sometimes, individuals experiencing depression feel isolated and unheard. When you listen to them without judgment, you can help them feel understood and validated. Acknowledge their emotions, and let them know that you're there to support them.\n2.  Encourage them to seek professional help: Depression often requires professional guidance"
+        },
+        {
+          "layer": 20,
+          "coef": -2.0,
+          "answer": " | Psychology Today\nThe first thing to do is to get your friend to talk about their feelings and problems. People who are depressed are usually very good at hiding it, and they don't want to burden anyone else with their problems. They will only talk about it if they feel safe and don't think you will judge them.\nYou can't fix it, but you can be a good friend and support them. Don't say stupid stuff like \"just cheer up\" or \"just get over it"
+        }
+      ]
+    }
+  ]
+}
