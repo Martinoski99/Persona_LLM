@@ -105,8 +105,10 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     
-    # Load steering vector
-    steering_vector = torch.load("persona_vectors/compassion_response_therapist_avg_diff.pt")[20]
+    # Load steering vectors (all 3 types)
+    therapist_vector = torch.load("persona_vectors/compassion_response_therapist_avg_diff.pt")[20]
+    friend_vector = torch.load("persona_vectors/compassion_response_friend_avg_diff.pt")[20]
+    prompt_vector = torch.load("persona_vectors/compassion_prompt_avg_diff.pt")[20]
     
     # Load prompts from JSON file (same as friend's setup)
     with open("compassion_steering_prompts.json", "r", encoding="utf-8") as f:
@@ -120,6 +122,13 @@ def main():
     layers = [20]
     coefs = [2.5, -2.5]  # same as friend's setup
     
+    # Define steering types to test
+    steering_types = [
+        ("therapist", therapist_vector),
+        ("friend", friend_vector), 
+        ("prompt", prompt_vector)
+    ]
+    
     for prompt in prompts:
         print(f"\nProcessing: {prompt[:50]}...")
         
@@ -130,16 +139,19 @@ def main():
         prompt_len = inputs["input_ids"].shape[1]
         baseline = tokenizer.decode(output[0][prompt_len:], skip_special_tokens=True)
         
-        # Generate steered responses
+        # Generate steered responses for all 3 types
         steered_responses = []
-        for layer in layers:
-            for coef in coefs:
-                steered = generate_with_steering(model, tokenizer, prompt, steering_vector, layer=layer, coeff=coef, max_tokens=512)
-                steered_responses.append({
-                    "layer": layer,
-                    "coef": coef,
-                    "answer": steered
-                })
+        for steering_type, steering_vector in steering_types:
+            print(f"  Testing {steering_type} steering...")
+            for layer in layers:
+                for coef in coefs:
+                    steered = generate_with_steering(model, tokenizer, prompt, steering_vector, layer=layer, coeff=coef, max_tokens=512)
+                    steered_responses.append({
+                        "steering_type": steering_type,
+                        "layer": layer,
+                        "coef": coef,
+                        "answer": steered
+                    })
         
         results.append({
             "prompt": prompt,
@@ -155,13 +167,17 @@ def main():
     data = {
         "metadata": {
             "model": model_name,
-            "vector_file": "persona_vectors/compassion_response_therapist_avg_diff.pt",
+            "vector_files": [
+                "persona_vectors/compassion_response_therapist_avg_diff.pt",
+                "persona_vectors/compassion_response_friend_avg_diff.pt", 
+                "persona_vectors/compassion_prompt_avg_diff.pt"
+            ],
             "layers": layers,
             "coefs": coefs,
             "temperature": 0.7,
             "top_p": 0.9,
             "max_tokens": 512,
-            "steering_type": "response",
+            "steering_types": ["therapist", "friend", "prompt"],
             "timestamp": timestamp
         },
         "data": results
@@ -172,6 +188,8 @@ def main():
     
     print(f"\nResults saved to: {output_file}")
     print(f"Generated {len(results)} prompts with {len(steered_responses)} steered responses each")
+    print(f"Tested 3 steering types: therapist, friend, prompt")
+    print(f"Each with {len(layers)} layers and {len(coefs)} coefficients")
 
 
 if __name__ == "__main__":
