@@ -14,7 +14,7 @@ class ActivationSteerer:
     Adds steering vector to model activations during generation.
     """
     
-    def __init__(self, model, steering_vector, coeff=1.0, layer_idx=20):
+    def __init__(self, model, steering_vector, coeff=1.0, layer_idx=-1):
         self.model = model
         self.coeff = coeff
         self.layer_idx = layer_idx
@@ -26,7 +26,7 @@ class ActivationSteerer:
     
     def _locate_layer(self):
         """Find the transformer layer to hook"""
-        # For Gemma models, layers are stored in model.model.layers
+        # For Llama models, layers are stored in model.model.layers
         return self.model.model.layers[self.layer_idx]
     
     def _hook_fn(self, module, ins, out):
@@ -86,11 +86,19 @@ def main():
     """Test the steering"""
     from transformers import AutoModelForCausalLM, AutoTokenizer
     import torch
+    import os
     
     # Load model
-    model_name = "google/gemma-2-8b-it"
-    model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", torch_dtype=torch.float16)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model_name = os.environ.get("MODEL_DIR", "/home/m/martinzb/links/scratch/huggingface/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659")
+    print("USING MODEL_DIR:", model_name)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name, 
+        local_files_only=True, 
+        device_map="auto", 
+        torch_dtype=torch.bfloat16,
+        low_cpu_mem_usage=True
+    )
+    tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=True)
     
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
